@@ -1,0 +1,115 @@
+
+!pip install -q openai
+
+import os
+from openai import OpenAI
+
+# =========================================
+# API CONFIGURATION
+# =========================================
+
+api_key = os.environ.get("OPENAI_API_KEY")
+
+if not api_key:
+    raise ValueError("API key is not configured.")
+
+client = OpenAI(api_key=api_key)
+
+
+# =========================================
+# BULLET LIST PROMPT
+# =========================================
+
+bullet_prompt = """
+List five benefits of daily exercise.
+
+Output requirements:
+- Use exactly five bullet points.
+- Each bullet point must contain one benefit.
+- Use simple English.
+- Do not use a table.
+"""
+
+response_bullet = client.responses.create(
+    model="YOUR_APPROVED_MODEL",
+    input=bullet_prompt
+)
+
+bullet_output = response_bullet.output_text
+
+
+# =========================================
+# MARKDOWN TABLE PROMPT
+# =========================================
+
+table_prompt = """
+Create a Markdown table about three benefits of daily exercise.
+
+The table must contain exactly two columns:
+
+Benefit | Description
+
+Include exactly three rows of benefits.
+Do not provide information outside the table.
+"""
+
+response_table = client.responses.create(
+    model="YOUR_APPROVED_MODEL",
+    input=table_prompt
+)
+
+table_output = response_table.output_text
+
+
+# =========================================
+# DISPLAY RESULTS
+# =========================================
+
+print("=" * 70)
+print("BULLET LIST OUTPUT")
+print("=" * 70)
+
+print(bullet_output)
+
+print("\n\n")
+
+print("=" * 70)
+print("MARKDOWN TABLE OUTPUT")
+print("=" * 70)
+
+print(table_output)
+
+
+# =========================================
+# BASIC VERIFICATION
+# =========================================
+
+print("\n\n")
+print("=" * 70)
+print("STRUCTURE VERIFICATION")
+print("=" * 70)
+
+# Bullet verification
+
+bullet_lines = [
+    line.strip()
+    for line in bullet_output.splitlines()
+    if line.strip()
+]
+
+print("\nBullet Output Lines:", len(bullet_lines))
+
+
+# Table verification
+
+if "|" in table_output and "---" in table_output:
+    print("Markdown table detected: YES")
+else:
+    print("Markdown table detected: NO")
+
+table_lines = [
+    line for line in table_output.splitlines()
+    if "|" in line
+]
+
+print("Table-related lines:", len(table_lines))
