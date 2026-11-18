@@ -1,0 +1,73 @@
+
+!pip install -q langchain langchain-openai
+
+import os
+
+from langchain_openai import ChatOpenAI
+from langchain_core.prompts import ChatPromptTemplate
+
+
+# =========================================
+# CONFIGURE API KEY
+# =========================================
+
+api_key = os.environ.get("OPENAI_API_KEY")
+
+if not api_key:
+    raise ValueError("API key is not configured.")
+
+
+# =========================================
+# CREATE THE LLM
+# =========================================
+
+llm = ChatOpenAI(
+    model="YOUR_APPROVED_MODEL",
+    temperature=0
+)
+
+
+# =========================================
+# CREATE PROMPT TEMPLATE
+# =========================================
+
+prompt = ChatPromptTemplate.from_template(
+    """
+    Summarize the following text in simple English:
+
+    {text}
+    """
+)
+
+
+# =========================================
+# CREATE LCEL CHAIN
+# =========================================
+
+chain = prompt | llm
+
+
+# =========================================
+# INPUT TEXT
+# =========================================
+
+text = """
+Artificial Intelligence enables computers to perform tasks
+that normally require human intelligence. It is used in areas
+such as healthcare, education, finance, robotics and transportation.
+"""
+
+
+# =========================================
+# EXECUTE THE CHAIN
+# =========================================
+
+response = chain.invoke({"text": text})
+
+
+# =========================================
+# DISPLAY OUTPUT
+# =========================================
+
+print("Generated Summary:")
+print(response.content)
